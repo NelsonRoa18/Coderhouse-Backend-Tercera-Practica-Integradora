@@ -1,6 +1,6 @@
 import passport from "passport";
 import local from 'passport-local'
-import userService from '../dao/models/user.model.js'
+import userManager from '../dao/models/user.model.js'
 import { createHash, isValidPassword } from '../utils.js';
 import GitHubStrategy from 'passport-github2'
 
@@ -26,7 +26,7 @@ const initializePassport = () => {
                     })
                 }
                 else {
-                    let user = await userService.findOne({ email: username })
+                    let user = await userManager.findOne({ email: username })
                     let cart = []
                     if (user) {
                         console.log("El usuario ya existe")
@@ -40,7 +40,7 @@ const initializePassport = () => {
                         password: createHash(password),
                         cart
                     }
-                    let result = await userService.create(newUser)
+                    let result = await userManager.create(newUser)
                     return done(null, result)
                 }
 
@@ -58,14 +58,14 @@ const initializePassport = () => {
     })
 
     passport.deserializeUser(async (id, done) => {
-        let user = await userService.findById(id)
+        let user = await userManager.findById(id)
         done(null, user)
     })
 
 
     passport.use('login', new LocalStrategy({ usernameField: 'email' }, async (username, password, done) => {
         try {
-            const user = await userService.findOne({ email: username })
+            const user = await userManager.findOne({ email: username })
             if (!user) {
                 console.log("El usuario no existe")
                 return done(null, user)
@@ -77,7 +77,7 @@ const initializePassport = () => {
         }
     }))
 
-    passport.use('restorepass', new LocalStrategy({ usernameField: 'email' }, async (username, password, done) => {
+/*     passport.use('restorepass', new LocalStrategy({ usernameField: 'email' }, async (username, password, done) => {
         try {
             console.log(password);
             const user = await userService.findOne({ email: username })
@@ -85,6 +85,7 @@ const initializePassport = () => {
                 console.log("El usuario no existe")
                 return done(null, false)
             }
+
             const newPassword = createHash(password)
             console.log(newPassword);
             const result = await userService.updateOne({ email: username }, { password: newPassword })
@@ -92,7 +93,7 @@ const initializePassport = () => {
         } catch (error) {
             return done(error)
         }
-    }))
+    })) */
 
     passport.use('github', new GitHubStrategy({
         clientID: "Iv23liBcPNc1h8AWysa0",
@@ -101,7 +102,7 @@ const initializePassport = () => {
     }, async (accessToken, refreshToken, profile, done) => {
         try {
             console.log(profile)
-            let user = await userService.findOne({ email: profile._json.email })
+            let user = await userManager.findOne({ email: profile._json.email })
             if (!user) {
                 let newUser = {
                     first_name: profile._json.name,
@@ -111,7 +112,7 @@ const initializePassport = () => {
                     password: "",
                     cart: []
                 }
-                let result = await userService.create(newUser)
+                let result = await userManager.create(newUser)
                 done(null, result)
             }
             else {

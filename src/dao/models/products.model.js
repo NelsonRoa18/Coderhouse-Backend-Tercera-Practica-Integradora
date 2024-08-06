@@ -24,6 +24,10 @@ const productsSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
     },
+    owner:{
+        type: Number,
+        required:true
+    }
 });
 
 productsSchema.plugin(mongoosePaginate);

@@ -3,6 +3,8 @@ import CustomError from "../../services/Customerror.js";
 import EErrors from "../../services/enum.js";
 import { generateProductErrorInfo } from "../../services/info.js";
 
+import userManager from '../models/user.model.js';
+
 class ProductManager {
     constructor() {
 
@@ -80,7 +82,7 @@ class ProductManager {
     async addProduct(data) {
         try {
             //Desestructuramos el objeto
-            let { name, description, price, category, available } = data
+            let { name, description, price, category, available, userEmail } = data
             //Consulto que esten todos los datos cargados
             if (!name || !description || !price || !category || !available) {
                 console.log({ status: "error", error: "Faltan parametros" })
@@ -92,8 +94,10 @@ class ProductManager {
                 })
                 return;
             }
+            let user = await userManager.findOne({email: userEmail});
+            let userId = parseInt(user._id);
             //Uso el metodo create para agregar cada uno de los campos de la collection
-            let result = await productModel.create({ name, description, price, category, available })
+            let result = await productModel.create({ name, description, price, category, available, owner: userId })
 
             //Retorno el result para que finalice la funcion           
             return result

@@ -11,8 +11,10 @@ btnSend.addEventListener('click', () => {
     const category = document.getElementById('category').value;
     const availableChecked = document.getElementById('available');
     const available = availableChecked.checked;
+    const userEmail = document.getElementById('userEmail').value;
+    console.log(userEmail);
 
-    socket.emit('addProduct', { name, description, price, category, available});
+    socket.emit('addProduct', { name, description, price, category, available, userEmail});
 
 })
 
@@ -38,7 +40,7 @@ socket.on('addProductsRealTime', products => {
             
         });
         newProduct.innerHTML = `<strong>Title: </strong>${product.name}, <strong>Description: </strong>${product.description},
-        <strong>Price: </strong>${product.price}, <strong>Code: </strong>${product.category},
+        <strong>Price: </strong>${product.price}, <strong>Category : </strong>${product.category},
         `;
         listProducts.appendChild(newProduct);
         listProducts.appendChild(btnDelete);

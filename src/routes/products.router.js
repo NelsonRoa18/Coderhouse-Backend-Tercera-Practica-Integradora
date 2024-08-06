@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
 router.get("/addproducts", async (req, res) => {
     try {
 
-        res.render('addproducts', {})
+        res.render('addproducts', {user:req.session.user})
 
     } catch (error) {
         console.error('Error:', error);

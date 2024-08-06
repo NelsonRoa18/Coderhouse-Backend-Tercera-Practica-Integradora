@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { isAuthenticated, isNotAuthenticated } from '../middleware/auth.js';
+import jwt from 'jsonwebtoken';
 
 const router = Router();
 
@@ -22,8 +23,24 @@ router.get('/profile', isAuthenticated, (req, res) => {
 
 });
 
+const secretKey = 'restore_pass';
+// Ruta para mostrar el formulario de restablecimiento de contraseña
 router.get('/restorepass', (req, res) => {
-    res.render('restorepass')
+    const token = req.query.token;
+
+    try {
+        const decoded = jwt.verify(token, secretKey);
+        if (decoded) {
+            res.render('restorepass', { token });
+        }
+        res.render('firstrestorepass');
+    } catch (err) {
+        res.status(401).send('El enlace ha expirado o no es válido.');
+    }
+});
+
+router.get('/firstrestorepass', (req, res) => {
+    res.render('firstrestorepass')
 })
 
 export default router;
